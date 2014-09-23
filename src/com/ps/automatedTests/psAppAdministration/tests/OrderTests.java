@@ -1,5 +1,6 @@
 package com.ps.automatedTests.psAppAdministration.tests;
 
+import java.util.List;
 import java.util.regex.Pattern;
 import java.util.concurrent.TimeUnit;
 
@@ -9,30 +10,31 @@ import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 
 import org.openqa.selenium.*;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.ps.automatedTests.psAppAdministration.utils.TestSetupUtil;
 
 public class OrderTests {
-  private WebDriver driver;
-  private String baseUrl;
+  private static WebDriver driver;
   private boolean acceptNextAlert = true;
-  private StringBuffer verificationErrors = new StringBuffer();
+  private static StringBuffer verificationErrors = new StringBuffer();
 
-  @Before
-  public void setUp() throws Exception {
+  @BeforeClass
+  public static void setUp() throws Exception {
 	  driver = TestSetupUtil.InitializeWebDriver(driver);
 	  TestSetupUtil.ExecuteUserLogin(driver);
+	  driver.findElement(By.xpath("(//a[contains(text(),'OrderController')])[5]")).click();
   }
 
   @Test
   public void testFindOrderAndSetMailsHaltTo() throws Exception {
-    driver.findElement(By.xpath("(//a[contains(text(),'OrderController')])[5]")).click();
     driver.findElement(By.linkText("Filter")).click();
     new Select(driver.findElement(By.id("filter.op.state"))).selectByVisibleText("Equal To");
     new Select(driver.findElement(By.id("state"))).selectByVisibleText("128");
     driver.findElement(By.name("_action_filter")).click();
-    driver.findElement(By.linkText("166517149")).click();
+    TestSetupUtil.GetFirstLinkInResultList(driver).click();
     driver.findElement(By.linkText("Kundenprofil")).click();
     driver.findElement(By.linkText("Transaktionen")).click();
     driver.findElement(By.linkText("Folgebestellungen")).click();
@@ -42,11 +44,29 @@ public class OrderTests {
     new Select(driver.findElement(By.id("customer.mailsHaltTo_year"))).selectByVisibleText("2015");
     driver.findElement(By.name("_action_update")).click();
     driver.findElement(By.linkText("Bestelldetails")).click();
-    driver.findElement(By.linkText("Changelog")).click();
+    driver.findElement(By.linkText("Order List")).click();
+  }
+  
+  @Test
+  public void testFindOrderAndCancel() throws Exception{
+	 driver.findElement(By.linkText("Filter")).click();
+	 new Select(driver.findElement(By.id("filter.op.state"))).selectByVisibleText("Equal To");
+	 new Select(driver.findElement(By.id("state"))).selectByVisibleText("8");
+	 driver.findElement(By.name("_action_filter")).click();
+	 TestSetupUtil.GetFirstLinkInResultList(driver).click();
+	 driver.findElement(By.linkText("stornieren")).click();
+	 
+	 //This popup sometimes needs some time to load so we have to use the Wait function
+	 
+	 WebDriverWait wait = new WebDriverWait(driver, 5);
+	 wait.until(ExpectedConditions.elementToBeClickable(By.linkText("Ja, definitiv!")));
+	 driver.findElement(By.linkText("Ja, definitiv!")).click();
+	 driver.findElement(By.className("alert-info")).getText().equals("Bestellung wurde storniert.");
+	 driver.findElement(By.linkText("Order List")).click();
   }
 
-  @After
-  public void tearDown() throws Exception {
+  @AfterClass
+  public static void tearDown() throws Exception {
     driver.quit();
     String verificationErrorString = verificationErrors.toString();
     if (!"".equals(verificationErrorString)) {
