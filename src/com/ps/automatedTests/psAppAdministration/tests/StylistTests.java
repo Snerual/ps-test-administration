@@ -2,12 +2,16 @@ package com.ps.automatedTests.psAppAdministration.tests;
 
 import java.util.regex.Pattern;
 import java.util.concurrent.TimeUnit;
+
 import org.junit.*;
+
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
+
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.Select;
 
+import com.ps.automatedTests.psAppAdministration.utils.AdminTestMacros;
 import com.ps.automatedTests.psAppAdministration.utils.TestSetupUtil;
 
 public class StylistTests {
@@ -18,7 +22,7 @@ public class StylistTests {
   @Before
   public void setUp() throws Exception {
     driver = TestSetupUtil.InitializeWebDriver(driver);
-    TestSetupUtil.ExecuteUserLogin(driver);
+    AdminTestMacros.ExecuteUserLogin(driver);
   }
 
   @Test

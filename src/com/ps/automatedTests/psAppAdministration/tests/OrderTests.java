@@ -14,6 +14,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import com.ps.automatedTests.psAppAdministration.utils.AdminTestMacros;
 import com.ps.automatedTests.psAppAdministration.utils.TestSetupUtil;
 
 public class OrderTests {
@@ -24,17 +25,13 @@ public class OrderTests {
   @BeforeClass
   public static void setUp() throws Exception {
 	  driver = TestSetupUtil.InitializeWebDriver(driver);
-	  TestSetupUtil.ExecuteUserLogin(driver);
+	  AdminTestMacros.ExecuteUserLogin(driver);
 	  driver.findElement(By.xpath("(//a[contains(text(),'OrderController')])[5]")).click();
   }
 
   @Test
   public void testFindOrderAndSetMailsHaltTo() throws Exception {
-    driver.findElement(By.linkText("Filter")).click();
-    new Select(driver.findElement(By.id("filter.op.state"))).selectByVisibleText("Equal To");
-    new Select(driver.findElement(By.id("state"))).selectByVisibleText("128");
-    driver.findElement(By.name("_action_filter")).click();
-    TestSetupUtil.GetFirstLinkInResultList(driver).click();
+	AdminTestMacros.FindOrderByState(driver, "128");
     driver.findElement(By.linkText("Kundenprofil")).click();
     driver.findElement(By.linkText("Transaktionen")).click();
     driver.findElement(By.linkText("Folgebestellungen")).click();
@@ -49,17 +46,13 @@ public class OrderTests {
   
   @Test
   public void testFindOrderAndCancel() throws Exception{
-	 driver.findElement(By.linkText("Filter")).click();
-	 new Select(driver.findElement(By.id("filter.op.state"))).selectByVisibleText("Equal To");
-	 new Select(driver.findElement(By.id("state"))).selectByVisibleText("8");
-	 driver.findElement(By.name("_action_filter")).click();
-	 TestSetupUtil.GetFirstLinkInResultList(driver).click();
+	 AdminTestMacros.FindOrderByState(driver, "8");
 	 driver.findElement(By.linkText("stornieren")).click();
 	 
-	 //This popup sometimes needs some time to load so we have to use the Wait function
+	 //This popup sometimes needs some time to load so we have to use the Wait function - seems to be fixed since updating the chrome driver
 	 
-	 WebDriverWait wait = new WebDriverWait(driver, 5);
-	 wait.until(ExpectedConditions.elementToBeClickable(By.linkText("Ja, definitiv!")));
+	 //WebDriverWait wait = new WebDriverWait(driver, 5);
+	 //wait.until(ExpectedConditions.elementToBeClickable(By.linkText("Ja, definitiv!")));
 	 driver.findElement(By.linkText("Ja, definitiv!")).click();
 	 driver.findElement(By.className("alert-info")).getText().equals("Bestellung wurde storniert.");
 	 driver.findElement(By.linkText("Order List")).click();
